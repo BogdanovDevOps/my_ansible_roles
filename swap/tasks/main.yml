@@ -1,0 +1,31 @@
+---
+# tasks file for swap
+- block: 
+  - name: создаем swap
+    shell: fallocate -l {{ swap_size}} /swapfile
+    args:
+      creates: /swapfile
+  - name: устанавливем права
+    file:
+      path: /swapfile
+      owner: root
+      group: root
+      mode: '0600'
+
+  - name: делаем файл swap файлом
+    shell: mkswap /swapfile
+    when: ansible_facts.swapfree_mb == 0
+
+  - name: включим свап
+    shell: swapon /swapfile
+    when: ansible_facts.swapfree_mb == 0
+
+  - name: добавляем в fstab
+    mount: 
+      name: none
+      src: /swapfile
+      fstype: swap  
+      opts: sw
+      passno: 0
+      dump: 0
+      state: present  

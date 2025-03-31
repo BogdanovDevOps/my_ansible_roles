@@ -1,0 +1,6 @@
+---
+# tasks file for hostname
+- name: set hostname to project host
+  ansible.builtin.hostname:
+    name: "debianserver"
+
